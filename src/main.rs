@@ -1,18 +1,16 @@
-fn main() {
-    println!("{}", div(4, 2));
+use actix_web::{http::header::ContentType, App, HttpResponse, HttpServer};
+
+#[actix_web::get("/")]
+async fn hello() -> HttpResponse {
+    HttpResponse::Ok()
+        .append_header(ContentType::json())
+        .body(r#"{"greet": "Hello, world!"}"#)
 }
 
-fn div(x: i32, y: i32) -> i32 {
-    x / y
-}
-
-#[test]
-fn div_test() {
-    assert_eq!(div(10, 3), 3);
-}
-
-#[test]
-#[should_panic]
-fn div_panic_test() {
-    div(2, 0);
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| App::new().service(hello))
+        .bind(("0.0.0.0", 8080))?
+        .run()
+        .await
 }
